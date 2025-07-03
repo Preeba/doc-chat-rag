@@ -1,0 +1,74 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.0'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'com.google.protobuf' version '0.9.4'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '21'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'dev.langchain4j:langchain4j:0.24.0'
+    implementation 'dev.langchain4j:langchain4j-open-ai:0.24.0'
+    implementation 'com.theokanning.openai-gpt3-java:service:0.18.2'
+    
+    // gRPC and Protobuf dependencies
+    implementation 'io.grpc:grpc-netty-shaded:1.63.0'
+    implementation 'io.grpc:grpc-protobuf:1.63.0'
+    implementation 'io.grpc:grpc-stub:1.63.0'
+    implementation 'com.google.protobuf:protobuf-java:3.25.3'
+    
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.testcontainers:junit-jupiter:1.19.3'
+}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.25.3'
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.63.0'
+        }
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.plugins {
+                grpc {}
+            }
+        }
+    }
+}
+
+sourceSets {
+    main {
+        proto {
+            srcDir 'src/main/proto'
+        }
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+} 
